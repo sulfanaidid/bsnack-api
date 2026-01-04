@@ -1,0 +1,147 @@
+{
+	"info": {
+		"_postman_id": "d981f02d-6151-4589-85d2-f846d63904d5",
+		"name": "bsnack-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "22504527"
+	},
+	"item": [
+		{
+			"name": "transactions",
+			"item": [
+				{
+					"name": "success case",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_name\": \"Sulfan\",\n    \"items\": [\n      {\n        \"product_id\": 1,\n        \"quantity\": 2\n      }\n    ]\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/transactions"
+					},
+					"response": []
+				},
+				{
+					"name": "stock not enough",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_name\": \"Sulfan\",\n    \"items\": [\n      {\n        \"product_id\": 1,\n        \"quantity\": 12825\n      }\n    ]\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/transactions"
+					},
+					"response": []
+				},
+				{
+					"name": "product not found",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_name\": \"Fery\",\n    \"items\": [\n      {\n        \"product_id\": 9999,\n        \"quantity\": 1\n      }\n    ]\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/transactions"
+					},
+					"response": []
+				},
+				{
+					"name": "empty items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_name\": \"Fery\",\n    \"items\": []\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/transactions"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "trx-report",
+			"item": [
+				{
+					"name": "success case",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/reports/transactions?start=2026-01-01&end=2026-01-31",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"reports",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "start",
+									"value": "2026-01-01"
+								},
+								{
+									"key": "end",
+									"value": "2026-01-31"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

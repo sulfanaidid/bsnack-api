@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
 	"os"
 
@@ -11,6 +11,7 @@ import (
 	"bsnack/internal/router"
 	"bsnack/internal/service"
 	"bsnack/pkg/database"
+	pkgredis "bsnack/pkg/redis"
 
 	"github.com/joho/godotenv"
 )
@@ -19,25 +20,40 @@ func main() {
 	_ = godotenv.Load()
 
 	dbConfig := config.LoadDatabaseConfig()
-	fmt.Println("dbConfig.DSN()", dbConfig.DSN())
 	db, err := database.NewPostgres(dbConfig.DSN())
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	trxRepo := repository.NewTransactionRepository(db)
-	productRepo := repository.NewProductRepository(db)
-	customerRepo := repository.NewCustomerRepository(db)
-
-	svc := &service.TransactionService{
-		DB:              db,
-		CustomerRepo:    customerRepo,
-		ProductRepo:     productRepo,
-		TransactionRepo: trxRepo,
+	redisClient := pkgredis.NewRedis()
+	if err := redisClient.Ping(context.Background()).Err(); err != nil {
+		log.Println("redis not connected, running without cache")
 	}
 
-	h := &handler.TransactionHandler{Service: svc}
-	r := router.Setup(h)
+	transactionRepo := repository.NewTransactionRepository(db)
+	productRepo := repository.NewProductRepository(db)
+	customerRepo := repository.NewCustomerRepository(db)
+	reportRepo := repository.NewReportRepository(db)
+
+	transactionService := service.NewTransactionService(
+		db,
+		transactionRepo,
+		customerRepo,
+		productRepo,
+	)
+
+	reportService := service.NewReportService(
+		reportRepo,
+		redisClient,
+	)
+
+	transactionHandler := handler.NewTransactionHandler(transactionService)
+	reportHandler := handler.NewReportHandler(reportService)
+
+	r := router.Setup(
+		transactionHandler,
+		reportHandler,
+	)
 
 	port := os.Getenv("PORT")
 	if port == "" {

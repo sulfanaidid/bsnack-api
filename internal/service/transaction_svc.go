@@ -15,6 +15,20 @@ type TransactionService struct {
 	ProductRepo     repository.ProductRepository
 }
 
+func NewTransactionService(
+	db *sql.DB,
+	transactionRepo repository.TransactionRepository,
+	customerRepo repository.CustomerRepository,
+	productRepo repository.ProductRepository,
+) *TransactionService {
+	return &TransactionService{
+		DB:              db,
+		TransactionRepo: transactionRepo,
+		CustomerRepo:    customerRepo,
+		ProductRepo:     productRepo,
+	}
+}
+
 func (s *TransactionService) CreateTransaction(ctx context.Context, req model.CreateTransactionRequest) (*model.CreateTransactionResponse, error) {
 	if len(req.Items) == 0 {
 		return nil, customerror.ErrItemsEmpty

@@ -13,6 +13,12 @@ type TransactionHandler struct {
 	Service *service.TransactionService
 }
 
+func NewTransactionHandler(service *service.TransactionService) *TransactionHandler {
+	return &TransactionHandler{
+		Service: service,
+	}
+}
+
 func (h *TransactionHandler) Create(c *gin.Context) {
 	var req model.CreateTransactionRequest
 
